@@ -1,0 +1,6 @@
+email,gender,expectedStatus
+valid@test.com,male,201
+notanemail,male,422
+missing-at-sign.com,female,422
+valid2@test.com,invalidgender,422
+valid3@test.com,female,201
