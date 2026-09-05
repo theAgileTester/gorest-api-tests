@@ -14,16 +14,16 @@ Auth	Public GET vs. authenticated write, missing token, malformed token, invalid
 Data-driven	CSV sweep testing multiple email/gender combinations against real field validation
 Chaining	Full create → read → update → delete → confirm-deletion lifecycle on Users
 # Key Findings
-GET requests are public; POST/PUT/DELETE require Bearer authentication. No auth needed to read data, but write operations return 401 without a valid token.
-Distinct error messages for different auth failures. Missing token → "Authentication failed". Invalid/malformed token → "Invalid token" — including a subtle case where Bearer/token (slash instead of space) is treated as no token at all.
-Real, structured 404s for non-existent resources — a genuine contrast to FakeStoreAPI, which never used 404 at all. GoRest returns {"message": "Resource not found"}.
-Genuine field-level validation. Invalid gender values and duplicate emails are rejected with 422/409 — unlike FakeStoreAPI, which accepted anything.
-Live dataset drift. User counts and pagination totals change over time (2967→2956 users in days) — and can even shift within a single test run, since GoRest is a shared, live public database.
-Hardcoded IDs/page numbers go stale quickly. Dynamic chaining (capturing real, current IDs via pre-request scripts) is required for reliable tests — a static ID or page number cannot be trusted to remain valid.
-Full CRUD lifecycle is genuinely persistent and verifiable — create, read, update, and delete were all independently confirmed via a self-contained chained sequence, unlike FakeStoreAPI's simulated (non-persistent) writes.
-CSV files must be genuinely plain-text — files saved with wrapping quotes or non-standard line endings (as produced by some export/copy-paste workflows) will silently fail to parse into separate columns.
-Newman requires explicit handling for data-driven requests. A request depending on CSV data will crash if run without the -d flag; production-quality scripts should check for missing iteration data and degrade gracefully rather than crash.
-GoRest's CI/CD behavior differs from FakeStoreAPI's. Unlike FakeStoreAPI (blocked by Cloudflare on GitHub Actions), GoRest's API runs cleanly from GitHub's shared IP ranges — the full 28-request suite executes successfully in CI, with only the expected live-data-drift failures appearing.
+- GET requests are public; POST/PUT/DELETE require Bearer authentication. No auth needed to read data, but write operations return 401 without a valid token.
+- Distinct error messages for different auth failures. Missing token → "Authentication failed". Invalid/malformed token → "Invalid token" — including a subtle case where Bearer/token (slash instead of space) is treated as no token at all.
+- Real, structured 404s for non-existent resources — a genuine contrast to FakeStoreAPI, which never used 404 at all. GoRest returns {"message": "Resource not found"}.
+- Genuine field-level validation. Invalid gender values and duplicate emails are rejected with 422/409 — unlike FakeStoreAPI, which accepted anything.
+- Live dataset drift. User counts and pagination totals change over time (2967→2956 users in days) — and can even shift within a single test run, since GoRest is a shared, live public database.
+- Hardcoded IDs/page numbers go stale quickly. Dynamic chaining (capturing real, current IDs via pre-request scripts) is required for reliable tests — a static ID or page number cannot be trusted to remain valid.
+- Full CRUD lifecycle is genuinely persistent and verifiable — create, read, update, and delete were all independently confirmed via a self-contained chained sequence, unlike FakeStoreAPI's simulated (non-persistent) writes.
+- CSV files must be genuinely plain-text — files saved with wrapping quotes or non-standard line endings (as produced by some export/copy-paste workflows) will silently fail to parse into separate columns.
+- Newman requires explicit handling for data-driven requests. A request depending on CSV data will crash if run without the -d flag; production-quality scripts should check for missing iteration data and degrade gracefully rather than crash.
+- GoRest's CI/CD behavior differs from FakeStoreAPI's. Unlike FakeStoreAPI (blocked by Cloudflare on GitHub Actions), GoRest's API runs cleanly from GitHub's shared IP ranges — the full 28-request suite executes successfully in CI, with only the expected live-data-drift failures appearing.
 # How to Run Postman
 
 Import GoRest API Tests.postman_collection.json
